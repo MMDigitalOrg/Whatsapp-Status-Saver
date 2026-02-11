@@ -128,6 +128,23 @@ public class DownloadsFragment extends Fragment implements MyStatusAdapter.OnChe
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Always refresh when returning to this fragment (e.g. after deleting in PreviewActivity/VideoPlayerActivity)
+        if (myAdapter != null) {
+            getFromSdcard();
+            myAdapter = new MyStatusAdapter(DownloadsFragment.this, f, DownloadsFragment.this);
+            gridView.setAdapter(myAdapter);
+
+            if (f == null || f.size() == 0) {
+                emptyLay.setVisibility(View.VISIBLE);
+            } else {
+                emptyLay.setVisibility(View.GONE);
+            }
+        }
+    }
+
     class deleteAll extends AsyncTask<Void, Void, Void> {
         int success = -1;
         AlertDialog alertDialog;

@@ -121,9 +121,9 @@ public class WAWebActivity extends AppCompatActivity {
 
         mWebView.getSettings().setJavaScriptEnabled(true); //for wa web
         mWebView.getSettings().setAllowContentAccess(true); // for camera
-        mWebView.getSettings().setAllowFileAccess(true);
-        mWebView.getSettings().setAllowFileAccessFromFileURLs(true);
-        mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
+        mWebView.getSettings().setAllowFileAccess(false);
+        mWebView.getSettings().setAllowFileAccessFromFileURLs(false);
+        mWebView.getSettings().setAllowUniversalAccessFromFileURLs(false);
         mWebView.getSettings().setMediaPlaybackRequiresUserGesture(false); //for audio messages
 
         mWebView.getSettings().setDomStorageEnabled(true); //for html5 app
@@ -138,13 +138,13 @@ public class WAWebActivity extends AppCompatActivity {
         mWebView.getSettings().setBuiltInZoomControls(true);
         mWebView.getSettings().setDisplayZoomControls(false);
 
-        mWebView.getSettings().setSaveFormData(true);
+        mWebView.getSettings().setSaveFormData(false);
         mWebView.getSettings().setLoadsImagesAutomatically(true);
         mWebView.getSettings().setBlockNetworkImage(false);
         mWebView.getSettings().setBlockNetworkLoads(false);
-        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(false);
         mWebView.getSettings().setNeedInitialFocus(false);
-        mWebView.getSettings().setGeolocationEnabled(true);
+        mWebView.getSettings().setGeolocationEnabled(false);
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
         mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
@@ -154,8 +154,7 @@ public class WAWebActivity extends AppCompatActivity {
 
             @Override
             public boolean onCreateWindow(WebView view, boolean dialog, boolean userGesture, Message resultMsg) {
-                Toast.makeText(getApplicationContext(), "OnCreateWindow", Toast.LENGTH_LONG).show();
-                return true;
+                return false;
             }
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

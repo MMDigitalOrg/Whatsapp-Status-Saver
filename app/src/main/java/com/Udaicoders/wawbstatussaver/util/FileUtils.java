@@ -151,7 +151,7 @@ public class FileUtils {
                 out.close();
                 out = null;
             }
-            Log.e("copy_file", "from : " + src.getAbsolutePath() + " to : " + dst.getAbsolutePath());
+            // path logging removed for security
         } finally {
             in.close();
             in = null;

@@ -28,7 +28,7 @@
 
     <application
         android:name="com.Udaicoders.wawbstatussaver.MyApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -62,42 +62,46 @@
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.HelpActivity"
+            android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.MainActivity"
+            android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.MyStatusActivity"
+            android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.PreviewActivity"
+            android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.PolicyActivity"
+            android:exported="false"
             android:screenOrientation="nosensor" />
 
-        <activity android:name="com.Udaicoders.wawbstatussaver.VideoPlayerActivity" />
+        <activity
+            android:name="com.Udaicoders.wawbstatussaver.VideoPlayerActivity"
+            android:exported="false" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.waweb.WAWebActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
-            android:exported="true"
+            android:exported="false"
             android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
-            android:persistableMode="persistAcrossReboots">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
+            android:persistableMode="persistAcrossReboots" />
 
         <activity
             android:name="com.Udaicoders.wawbstatussaver.DChatActivity"
+            android:exported="false"
             android:screenOrientation="nosensor" />
 
         <activity

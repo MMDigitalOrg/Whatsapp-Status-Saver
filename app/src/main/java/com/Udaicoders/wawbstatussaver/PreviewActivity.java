@@ -63,6 +63,19 @@ public class PreviewActivity extends AppCompatActivity {
         position = getIntent().getIntExtra("position", 0);
         statusDownload = getIntent().getStringExtra("statusdownload");
 
+        if (imageList == null || imageList.isEmpty()) {
+            finish();
+            return;
+        }
+
+        if (position < 0 || position >= imageList.size()) {
+            position = 0;
+        }
+
+        if (statusDownload == null) {
+            statusDownload = "";
+        }
+
         if (statusDownload.equals("download")) {
             downloadIV.setVisibility(View.GONE);
         } else {

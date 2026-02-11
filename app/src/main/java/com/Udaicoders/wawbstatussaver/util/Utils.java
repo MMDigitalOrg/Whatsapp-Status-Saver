@@ -124,8 +124,13 @@ public class Utils {
             finalPath = getDir(context, "Images").getAbsolutePath();
         }
 
-        String pathWithName = finalPath + File.separator + new File(Uri.parse(sourceFile).getPath()).getName();
-        Log.e( "copyFileInSavedDir: ", pathWithName);
+        String fileName = new File(Uri.parse(sourceFile).getPath()).getName();
+        // Sanitize filename to prevent path traversal
+        fileName = fileName.replace("..", "").replace("/", "").replace("\\", "");
+        if (fileName.isEmpty()) {
+            return false;
+        }
+        String pathWithName = finalPath + File.separator + fileName;
         Uri destUri = Uri.fromFile(new File(pathWithName));
 
         InputStream is = null;
@@ -182,10 +187,12 @@ public class Utils {
     }
 
     public static void shareFile(Context context, boolean isVideo, String path) {
+        if (path == null || path.isEmpty()) return;
+
         Intent share = new Intent();
         share.setAction(Intent.ACTION_SEND);
         if (isVideo)
-            share.setType("Video/*");
+            share.setType("video/*");
         else
             share.setType("image/*");
 
@@ -198,14 +205,17 @@ public class Utils {
         }
 
         share.putExtra(Intent.EXTRA_STREAM, uri);
-        context.startActivity(share);
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.startActivity(Intent.createChooser(share, context.getString(R.string.share)));
     }
 
     public static void repostWhatsApp(Context context, boolean isVideo, String path) {
+        if (path == null || path.isEmpty()) return;
+
         Intent share = new Intent();
         share.setAction(Intent.ACTION_SEND);
         if (isVideo)
-            share.setType("Video/*");
+            share.setType("video/*");
         else
             share.setType("image/*");
 
@@ -217,6 +227,7 @@ public class Utils {
                     context.getApplicationContext().getPackageName() + ".provider", new File(path));
         }
         share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         share.setPackage("com.whatsapp");
         context.startActivity(share);
     }

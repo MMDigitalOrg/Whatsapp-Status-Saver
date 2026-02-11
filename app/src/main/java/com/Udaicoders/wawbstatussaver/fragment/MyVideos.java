@@ -137,7 +137,7 @@ public class MyVideos extends Fragment implements MyStatusAdapter.OnCheckboxList
 
             for (StatusModel details : filesToDelete) {
                 File file = new File(details.getFilePath());
-                Log.e( "onClick: ", file.getAbsolutePath());
+                // path logging removed for security
                 if (file.exists()) {
                     if (file.delete()) {
                         deletedFiles.add(details);
