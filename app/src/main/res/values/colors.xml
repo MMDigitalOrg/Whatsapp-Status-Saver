@@ -10,59 +10,60 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="splash_text">#1DB06F</color>
-    <color name="header_text_color">#1DB06F</color>
-    <color name="tab_txt_press">#ffffff</color>
-    <color name="tab_txt_unpress">#1DB06F</color>
-    <color name="main_bg_color">#F9FBFD</color>
-    <color name="thumb_color">#A1A1A2</color>
-    <color name="track_color">#DADCDD</color>
-    <color name="chkbox_color">#ffffff</color>
-    <color name="home_top_start_color">#1DB06F</color>
-    <color name="home_top_end_color">#1DA469</color>
+    <color name="splash_text">#007AFF</color>
+    <color name="header_text_color">#1C1C1E</color>
+    <color name="tab_txt_press">#FFFFFF</color>
+    <color name="tab_txt_unpress">#8E8E93</color>
+    <color name="main_bg_color">#F2F2F7</color>
+    <color name="thumb_color">#007AFF</color>
+    <color name="track_color">#D1D1D6</color>
+    <color name="chkbox_color">#FFFFFF</color>
+    <color name="home_top_start_color">#007AFF</color>
+    <color name="home_top_end_color">#0055D4</color>
     <color name="round_btn_bg">#80000000</color>
-    <color name="drawer_unpress">#AFAEAE</color>
-    <color name="drawer_press">#1DB06F</color>
-    <color name="popup_bg">#fff</color>
-    <color name="popup_btn_color">#E6F6ED</color>
-    <color name="btn_icon">#1DB06F</color>
-    <color name="btn_text">#1DB06F</color>
-    <color name="circle_pre">#1DB06F</color>
-    <color name="text_bg_pre">#fff</color>
-    <color name="pre_icon_color">#fff</color>
-    <color name="pre_text_color">#1DB06F</color>
-    <color name="help_text">#1DB06F</color>
-    <color name="text_hint_color">#70BA99</color>
-    <color name="chat_main_txt_color">#000</color>
-    <color name="chat_sub_txt_color">#8D9CA6</color>
-    <color name="user_chat_main_txt_color">#000</color>
-    <color name="user_chat_sub_txt_color">#8D9CA6</color>
+    <color name="drawer_unpress">#8E8E93</color>
+    <color name="drawer_press">#007AFF</color>
+    <color name="popup_bg">#FFFFFF</color>
+    <color name="tab_inactive_bg">#E5E5EA</color>
+    <color name="popup_btn_color">#E5F0FF</color>
+    <color name="btn_icon">#007AFF</color>
+    <color name="btn_text">#007AFF</color>
+    <color name="circle_pre">#007AFF</color>
+    <color name="text_bg_pre">#FFFFFF</color>
+    <color name="pre_icon_color">#FFFFFF</color>
+    <color name="pre_text_color">#007AFF</color>
+    <color name="help_text">#007AFF</color>
+    <color name="text_hint_color">#5AC8FA</color>
+    <color name="chat_main_txt_color">#1C1C1E</color>
+    <color name="chat_sub_txt_color">#8E8E93</color>
+    <color name="user_chat_main_txt_color">#1C1C1E</color>
+    <color name="user_chat_sub_txt_color">#8E8E93</color>
 
 
     <!--intro slider  \\-->
     <!--slider text-->
-    <color name="slider_hading_text">#1DB06F</color>
-    <color name="slider_sub_text">#000</color>
+    <color name="slider_hading_text">#007AFF</color>
+    <color name="slider_sub_text">#1C1C1E</color>
 
     <!-- Screens background color-->
-    <color name="bg_screen1">#DFF9EE</color>
-    <color name="bg_screen2">#DFF9EE</color>
-    <color name="bg_screen3">#DFF9EE</color>
+    <color name="bg_screen1">#E5F0FF</color>
+    <color name="bg_screen2">#E5F0FF</color>
+    <color name="bg_screen3">#E5F0FF</color>
     <color name="bg_screen4">#000000</color>
 
     <!-- dots inactive colors -->
-    <color name="dot_dark_screen1">#BDBDBF</color>
-    <color name="dot_dark_screen2">#BDBDBF</color>
-    <color name="dot_dark_screen3">#BDBDBF</color>
-    <color name="dot_dark_screen4">#BDBDBF</color>
-    <color name="dot_dark_screen5">#BDBDBF</color>
+    <color name="dot_dark_screen1">#D1D1D6</color>
+    <color name="dot_dark_screen2">#D1D1D6</color>
+    <color name="dot_dark_screen3">#D1D1D6</color>
+    <color name="dot_dark_screen4">#D1D1D6</color>
+    <color name="dot_dark_screen5">#D1D1D6</color>
 
     <!-- dots active colors -->
-    <color name="dot_light_screen1">#818384</color>
-    <color name="dot_light_screen2">#818384</color>
-    <color name="dot_light_screen3">#818384</color>
-    <color name="dot_light_screen4">#818384</color>
-    <color name="dot_light_screen5">#818384</color>
+    <color name="dot_light_screen1">#007AFF</color>
+    <color name="dot_light_screen2">#007AFF</color>
+    <color name="dot_light_screen3">#007AFF</color>
+    <color name="dot_light_screen4">#007AFF</color>
+    <color name="dot_light_screen5">#007AFF</color>
 
 
     <array name="array_dot_active">

@@ -127,36 +127,6 @@
                 app:tint="@color/pre_icon_color"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/repostIV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/_7sdp"
-                android:text="@string/repost"
-                android:textColor="@color/pre_text_color"
-                android:textStyle="bold"
-                android:paddingLeft="@dimen/_7sdp"
-                android:paddingRight="@dimen/_7sdp"
-                android:paddingBottom="@dimen/_1sdp"
-                android:background="@drawable/ic_text_bg_pre"
-                android:textSize="@dimen/_9sdp" />
-
-            <ImageView
-                android:layout_width="@dimen/_33sdp"
-                android:layout_height="@dimen/_33sdp"
-                android:background="@drawable/ic_round_pre"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_whatsapp"
-                app:tint="@color/pre_icon_color"/>
-        </LinearLayout>
-
 
     </LinearLayout>
 

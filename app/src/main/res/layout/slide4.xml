@@ -75,51 +75,6 @@
                 android:textSize="@dimen/_10sdp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:paddingLeft="@dimen/_15sdp"
-            android:paddingRight="@dimen/_15sdp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/noti"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/desc_step42"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/slide_desc"
-                    android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/desc_step422"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/slide_desc1" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/noti"
-                android:layout_width="@dimen/_60sdp"
-                android:layout_height="@dimen/_28sdp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/home_btn"
-                android:backgroundTint="@color/slider_hading_text"
-                android:gravity="center"
-                android:text="@string/allow"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="@dimen/_10sdp" />
-        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>

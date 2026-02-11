@@ -35,7 +35,7 @@ public class PreviewActivity extends AppCompatActivity {
     ArrayList<StatusModel> imageList;
     int position;
 
-    LinearLayout downloadIV, shareIV, deleteIV, wAppIV;
+    LinearLayout downloadIV, shareIV, deleteIV;
     PreviewAdapter previewAdapter;
     String statusDownload;
     ImageView backIV;
@@ -59,8 +59,6 @@ public class PreviewActivity extends AppCompatActivity {
         shareIV = findViewById(R.id.shareIV);
         downloadIV = findViewById(R.id.downloadIV);
         deleteIV = findViewById(R.id.deleteIV);
-        wAppIV = findViewById(R.id.repostIV);
-
         imageList = getIntent().getParcelableArrayListExtra("images");
         position = getIntent().getIntExtra("position", 0);
         statusDownload = getIntent().getStringExtra("statusdownload");
@@ -79,7 +77,6 @@ public class PreviewActivity extends AppCompatActivity {
         shareIV.setOnClickListener(clickListener);
         deleteIV.setOnClickListener(clickListener);
         backIV.setOnClickListener(clickListener);
-        wAppIV.setOnClickListener(clickListener);
 
         /*admob*/
         container = findViewById(R.id.banner_container);
@@ -177,12 +174,6 @@ public class PreviewActivity extends AppCompatActivity {
                     } else {
                         finish();
                     }
-                    break;
-
-                case R.id.repostIV:
-
-                    Utils.repostWhatsApp(PreviewActivity.this, Utils.isVideoFile(PreviewActivity.this, imageList.get(viewPager.getCurrentItem()).getFilePath()),imageList.get(viewPager.getCurrentItem()).getFilePath());
-
                     break;
 
                 default:

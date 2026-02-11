@@ -22,7 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.documentfile.provider.DocumentFile;
@@ -38,10 +37,17 @@ import com.Udaicoders.wawbstatussaver.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxListener {
+public class RecentStatusFragment extends Fragment implements RecentAdapter.OnCheckboxListener {
+
+    private static final String ARG_FILTER_TYPE = "filter_type";
+    public static final String FILTER_IMAGES = "images";
+    public static final String FILTER_VIDEOS = "videos";
+    static String TAG = "resultCheck";
+
+    private String filterType;
 
     GridView imageGrid;
     ArrayList<StatusModel> f = new ArrayList<>();
@@ -52,57 +58,30 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
     RelativeLayout loaderLay, emptyLay;
     SwipeRefreshLayout swipeToRefresh;
     LinearLayout sAccessBtn;
-    int REQUEST_ACTION_OPEN_DOCUMENT_TREE = 101;
-    static String TAG = "resultCheck";
+
+    int REQUEST_WA_TREE = 101;
+    int REQUEST_WB_TREE = 1001;
+    boolean dataLoaded = false;
+
+    public boolean isDataLoaded() {
+        return dataLoaded;
+    }
+
+    public static RecentStatusFragment newInstance(String filterType) {
+        RecentStatusFragment fragment = new RecentStatusFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_FILTER_TYPE, filterType);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate:  Whatsapp");
+        if (getArguments() != null) {
+            filterType = getArguments().getString(ARG_FILTER_TYPE, FILTER_IMAGES);
+        }
     }
-
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume:  Whatsapp");
-        super.onResume();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        Log.d(TAG, "onAttach:  Whatsapp");
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.d(TAG, "onDestroyView:  Whatsapp");
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(TAG, "onPause:  Whatsapp");
-        super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        Log.d(TAG, "onStart:  Whatsapp");
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop:  Whatsapp");
-        super.onStop();
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d(TAG, "onDetach:  Whatsapp");
-        super.onDetach();
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -110,7 +89,6 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recent_fragment, container, false);
 
-        Log.d(TAG, "onCreateView:  Whatsapp");
         loaderLay = rootView.findViewById(R.id.loaderLay);
         emptyLay = rootView.findViewById(R.id.emptyLay);
 
@@ -118,7 +96,7 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
 
         swipeToRefresh = rootView.findViewById(R.id.swipeToRefresh);
         swipeToRefresh.setOnRefreshListener(() -> {
-            if (!SharedPrefs.getWATree(getActivity()).equals("")) {
+            if (hasAnyTreeAccess()) {
                 for (StatusModel deletedFile : filesToDelete) {
                     f.contains(deletedFile.selected = false);
                 }
@@ -136,7 +114,6 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
         actionLay = rootView.findViewById(R.id.actionLay);
         deleteIV = rootView.findViewById(R.id.deleteIV);
         deleteIV.setOnClickListener(view -> {
-
             if (!filesToDelete.isEmpty()) {
                 new AlertDialog.Builder(getContext())
                         .setMessage(getResources().getString(R.string.delete_alert))
@@ -144,11 +121,8 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
                         .setNegativeButton(getResources().getString(R.string.yes), (dialogInterface, i) -> {
                             new deleteAll().execute();
                         })
-                        .setPositiveButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
+                        .setPositiveButton(getResources().getString(R.string.no), (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
                         }).create().show();
             }
         });
@@ -160,8 +134,6 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
 
         selectAll = rootView.findViewById(R.id.selectAll);
         selectAll.setOnCheckedChangeListener((compoundButton, b) -> {
-
-
             if (!compoundButton.isPressed()) {
                 return;
             }
@@ -190,53 +162,78 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
             myAdapter.notifyDataSetChanged();
         });
 
-
         sAccessBtn = rootView.findViewById(R.id.sAccessBtn);
         sAccessBtn.setOnClickListener(v -> {
-            if (Utils.appInstalledOrNot(getActivity(), "com.whatsapp")) {
+            boolean waInstalled = Utils.appInstalledOrNot(getActivity(), "com.whatsapp");
+            boolean wbInstalled = Utils.appInstalledOrNot(getActivity(), "com.whatsapp.w4b");
+            boolean waGranted = !SharedPrefs.getWATree(getActivity()).equals("");
+            boolean wbGranted = !SharedPrefs.getWBTree(getActivity()).equals("");
 
-                StorageManager sm = (StorageManager) getActivity().getSystemService(Context.STORAGE_SERVICE);
-
-                String statusDir = getWhatsupFolder();
-                Intent intent = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
-                    Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
-
-                    String scheme = uri.toString();
-
-                    scheme = scheme.replace("/root/", "/document/");
-
-                    scheme += "%3A" + statusDir;
-
-                    uri = Uri.parse(scheme);
-
-                    intent.putExtra("android.provider.extra.INITIAL_URI", uri);
-                } else {
-                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    intent.putExtra("android.provider.extra.INITIAL_URI", Uri.parse("content://com.android.externalstorage.documents/document/primary%3A" + statusDir));
-                }
-
-
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-
-                startActivityForResult(intent, REQUEST_ACTION_OPEN_DOCUMENT_TREE);
-
-            } else {
-                Toast.makeText(getActivity(), "Please Install WhatsApp For Download Status!!!!!", Toast.LENGTH_SHORT).show();
+            if (waInstalled && !waGranted) {
+                launchSAFIntent(getWhatsAppFolder(), REQUEST_WA_TREE);
+            } else if (wbInstalled && !wbGranted) {
+                launchSAFIntent(getWABusinessFolder(), REQUEST_WB_TREE);
+            } else if (!waInstalled && !wbInstalled) {
+                Toast.makeText(getActivity(), "Please install WhatsApp to download statuses!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        if (!SharedPrefs.getWATree(getActivity()).equals("")) {
+        if (hasAnyTreeAccess()) {
             populateGrid();
         }
 
         return rootView;
     }
 
+    private boolean hasAnyTreeAccess() {
+        return !SharedPrefs.getWATree(getActivity()).equals("")
+                || !SharedPrefs.getWBTree(getActivity()).equals("");
+    }
+
+    private void launchSAFIntent(String statusDir, int requestCode) {
+        StorageManager sm = (StorageManager) getActivity().getSystemService(Context.STORAGE_SERVICE);
+        Intent intent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            intent = sm.getPrimaryStorageVolume().createOpenDocumentTreeIntent();
+            Uri uri = intent.getParcelableExtra("android.provider.extra.INITIAL_URI");
+            String scheme = uri.toString();
+            scheme = scheme.replace("/root/", "/document/");
+            scheme += "%3A" + statusDir;
+            uri = Uri.parse(scheme);
+            intent.putExtra("android.provider.extra.INITIAL_URI", uri);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.putExtra("android.provider.extra.INITIAL_URI",
+                    Uri.parse("content://com.android.externalstorage.documents/document/primary%3A" + statusDir));
+        }
+
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+
+        startActivityForResult(intent, requestCode);
+    }
+
+    private String getWhatsAppFolder() {
+        if (new File(Environment.getExternalStorageDirectory() + File.separator
+                + "Android/media/com.whatsapp/WhatsApp" + File.separator + "Media" + File.separator + ".Statuses").isDirectory()) {
+            return "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses";
+        } else {
+            return "WhatsApp%2FMedia%2F.Statuses";
+        }
+    }
+
+    private String getWABusinessFolder() {
+        if (new File(Environment.getExternalStorageDirectory() + File.separator
+                + "Android/media/com.whatsapp.w4b/WhatsApp Business" + File.separator + "Media" + File.separator + ".Statuses").isDirectory()) {
+            return "Android%2Fmedia%2Fcom.whatsapp.w4b%2FWhatsApp Business%2FMedia%2F.Statuses";
+        } else {
+            return "WhatsApp Business%2FMedia%2F.Statuses";
+        }
+    }
+
+    // --- Delete selected statuses ---
     class deleteAll extends AsyncTask<Void, Void, Void> {
         int success = -1;
         AlertDialog alertDialog;
@@ -250,9 +247,7 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             ArrayList<StatusModel> deletedFiles = new ArrayList<>();
-
             for (int i = 0; i < filesToDelete.size(); i++) {
                 StatusModel details = filesToDelete.get(i);
                 DocumentFile fromTreeUri = DocumentFile.fromSingleUri(getActivity(), Uri.parse(details.getFilePath()));
@@ -270,12 +265,10 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
                     success = 0;
                 }
             }
-
             filesToDelete.clear();
             for (StatusModel deletedFile : deletedFiles) {
                 f.remove(deletedFile);
             }
-
             return null;
         }
 
@@ -294,6 +287,7 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
         }
     }
 
+    // --- Download selected statuses ---
     class downloadAll extends AsyncTask<Void, Void, Void> {
         AlertDialog alertDialog;
         int success = -1;
@@ -308,14 +302,13 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
         @Override
         protected Void doInBackground(Void... voids) {
             if (!filesToDelete.isEmpty()) {
-                ArrayList<StatusModel> deletedFiles = new ArrayList<>();
+                ArrayList<StatusModel> downloadedFiles = new ArrayList<>();
                 for (int i = 0; i < filesToDelete.size(); i++) {
                     StatusModel details = filesToDelete.get(i);
                     DocumentFile fromTreeUri = DocumentFile.fromSingleUri(getActivity(), Uri.parse(details.getFilePath()));
                     if (fromTreeUri.exists()) {
-//                        Log.e("again: ", new File(details.getFilePath()).getAbsolutePath());
                         if (Utils.download(getActivity(), details.getFilePath())) {
-                            deletedFiles.add(details);
+                            downloadedFiles.add(details);
                             if (success == 0) {
                                 break;
                             }
@@ -326,14 +319,11 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
                     } else {
                         success = 0;
                     }
-
                 }
-
                 filesToDelete.clear();
-                for (StatusModel deletedFile : deletedFiles) {
-                    f.contains(deletedFile.selected = false);
+                for (StatusModel downloadedFile : downloadedFiles) {
+                    f.contains(downloadedFile.selected = false);
                 }
-
             }
             return null;
         }
@@ -356,10 +346,10 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
             } else {
                 AdController.showInterAd(getActivity(), null, 0);
             }
-
         }
     }
 
+    // --- Load data ---
     loadDataAsync async;
 
     public void populateGrid() {
@@ -370,15 +360,12 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy:  Whatsapp ");
         if (async != null) {
             async.cancel(true);
         }
     }
 
-
     class loadDataAsync extends AsyncTask<Void, Void, Void> {
-        DocumentFile[] allFiles;
 
         @Override
         protected void onPreExecute() {
@@ -391,17 +378,65 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
 
         @Override
         protected Void doInBackground(Void... voids) {
-            allFiles = null;
             f = new ArrayList<>();
-            allFiles = getFromSdcard();
+            ArrayList<DocumentFile> allFilesList = new ArrayList<>();
 
-            Arrays.sort(allFiles, (o1, o2) -> Long.compare(o2.lastModified(), o1.lastModified()));
-            for (int i = 0; i < allFiles.length; i++) {
-                if (!allFiles[i].getUri().toString().contains(".nomedia")) {
-                    f.add(new StatusModel(allFiles[i].getUri().toString()));
+            // Load from WhatsApp directory
+            String waTreeUri = SharedPrefs.getWATree(getActivity());
+            if (!waTreeUri.equals("")) {
+                try {
+                    DocumentFile waDir = DocumentFile.fromTreeUri(
+                            requireContext().getApplicationContext(), Uri.parse(waTreeUri));
+                    if (waDir != null && waDir.exists() && waDir.isDirectory()
+                            && waDir.canRead() && waDir.canWrite()) {
+                        DocumentFile[] waFiles = waDir.listFiles();
+                        if (waFiles != null) {
+                            Collections.addAll(allFilesList, waFiles);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
+            // Load from WA Business directory
+            String wbTreeUri = SharedPrefs.getWBTree(getActivity());
+            if (!wbTreeUri.equals("")) {
+                try {
+                    DocumentFile wbDir = DocumentFile.fromTreeUri(
+                            requireContext().getApplicationContext(), Uri.parse(wbTreeUri));
+                    if (wbDir != null && wbDir.exists() && wbDir.isDirectory()
+                            && wbDir.canRead() && wbDir.canWrite()) {
+                        DocumentFile[] wbFiles = wbDir.listFiles();
+                        if (wbFiles != null) {
+                            Collections.addAll(allFilesList, wbFiles);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Sort combined list by last modified (newest first)
+            Collections.sort(allFilesList,
+                    (o1, o2) -> Long.compare(o2.lastModified(), o1.lastModified()));
+
+            // Filter by type and exclude .nomedia
+            for (DocumentFile file : allFilesList) {
+                String uri = file.getUri().toString();
+                if (uri.contains(".nomedia")) continue;
+
+                String mimeType = file.getType();
+                if (FILTER_IMAGES.equals(filterType)) {
+                    if (mimeType != null && mimeType.startsWith("image")) {
+                        f.add(new StatusModel(uri));
+                    }
+                } else if (FILTER_VIDEOS.equals(filterType)) {
+                    if (mimeType != null && mimeType.startsWith("video")) {
+                        f.add(new StatusModel(uri));
+                    }
+                }
+            }
 
             return null;
         }
@@ -410,42 +445,21 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            new Handler().postDelayed(() -> {
-                if (getActivity() != null) {
-                    if (f != null && f.size() != 0) {
-                        myAdapter = new RecentAdapter(RecentWapp.this, f, RecentWapp.this);
-                        imageGrid.setAdapter(myAdapter);
-                        imageGrid.setVisibility(View.VISIBLE);
-                    }
-                    loaderLay.setVisibility(View.GONE);
+            if (getActivity() != null) {
+                if (f != null && f.size() != 0) {
+                    myAdapter = new RecentAdapter(RecentStatusFragment.this, f, RecentStatusFragment.this);
+                    imageGrid.setAdapter(myAdapter);
+                    imageGrid.setVisibility(View.VISIBLE);
                 }
+                dataLoaded = true;
+                loaderLay.setVisibility(View.GONE);
+            }
 
-                if (f == null || f.size() == 0) {
-                    emptyLay.setVisibility(View.VISIBLE);
-                } else {
-                    emptyLay.setVisibility(View.GONE);
-                }
-            }, 1000);
-        }
-    }
-
-    private DocumentFile[] getFromSdcard() {
-        String treeUri = SharedPrefs.getWATree(getActivity());
-        DocumentFile fromTreeUri = DocumentFile.fromTreeUri(requireContext().getApplicationContext(), Uri.parse(treeUri));
-        if (fromTreeUri != null && fromTreeUri.exists() && fromTreeUri.isDirectory()
-                && fromTreeUri.canRead() && fromTreeUri.canWrite()) {
-
-            return fromTreeUri.listFiles();
-        } else {
-            return null;
-        }
-    }
-
-    public String getWhatsupFolder() {
-        if (new File(Environment.getExternalStorageDirectory() + File.separator + "Android/media/com.whatsapp/WhatsApp" + File.separator + "Media" + File.separator + ".Statuses").isDirectory()) {
-            return "Android%2Fmedia%2Fcom.whatsapp%2FWhatsApp%2FMedia%2F.Statuses";
-        } else {
-            return "WhatsApp%2FMedia%2F.Statuses";
+            if (f == null || f.size() == 0) {
+                emptyLay.setVisibility(View.VISIBLE);
+            } else {
+                emptyLay.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -455,45 +469,43 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
         if (myAdapter != null) {
             myAdapter.onActivityResult(requestCode, resultCode, data);
         }
+
+        // Refresh after returning from PreviewActivity
         if (requestCode == 10 && resultCode == 10) {
-//            myAdapter.notifyDataSetChanged();
-
-            DocumentFile[] allFiles = null;
-            f = new ArrayList<>();
-            allFiles = getFromSdcard();
-//            Arrays.sort(allFiles, (o1, o2) -> Long.compare(o2.lastModified(), o1.lastModified()));
-            for (int i = 0; i < allFiles.length - 1; i++) {
-                if (!allFiles[i].getUri().toString().contains(".nomedia")) {
-                    f.add(new StatusModel(allFiles[i].getUri().toString()));
-                }
-            }
-            myAdapter = new RecentAdapter(RecentWapp.this, f, RecentWapp.this);
-            imageGrid.setAdapter(myAdapter);
-
+            populateGrid();
             actionLay.setVisibility(View.GONE);
             selectAll.setChecked(false);
         }
 
-
-        if (requestCode == REQUEST_ACTION_OPEN_DOCUMENT_TREE && resultCode == Activity.RESULT_OK) {
+        // Handle SAF permission grants
+        if (resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
             Log.e("onActivityResult: ", "" + data.getData());
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     requireContext().getContentResolver()
-                            .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            .takePersistableUriPermission(uri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            SharedPrefs.setWATree(getActivity(), uri.toString());
-
-            populateGrid();
+            if (requestCode == REQUEST_WA_TREE) {
+                SharedPrefs.setWATree(getActivity(), uri.toString());
+                // Chain to WB if installed and not yet granted
+                if (Utils.appInstalledOrNot(getActivity(), "com.whatsapp.w4b")
+                        && SharedPrefs.getWBTree(getActivity()).equals("")) {
+                    launchSAFIntent(getWABusinessFolder(), REQUEST_WB_TREE);
+                } else {
+                    populateGrid();
+                }
+            } else if (requestCode == REQUEST_WB_TREE) {
+                SharedPrefs.setWBTree(getActivity(), uri.toString());
+                populateGrid();
+            }
         }
-
     }
-
 
     @Override
     public void onCheckboxListener(View view, List<StatusModel> list) {
@@ -510,7 +522,6 @@ public class RecentWapp extends Fragment implements RecentAdapter.OnCheckboxList
             actionLay.setVisibility(View.VISIBLE);
             return;
         }
-
         selectAll.setChecked(false);
         actionLay.setVisibility(View.GONE);
     }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recent_status">الوضع الأخير</string>
-    <string name="saved_status">الحالة المحفوظة</string>
+    <string name="saved_status">المحفوظة</string>
+    <string name="new_status">حالة جديدة</string>
     <string name="wapp">WhatsApp</string>
     <string name="wbapp">WA Business</string>
     <string name="language">لغة</string>
@@ -16,7 +17,9 @@
     <string name="save">حفظ</string>
     <string name="delete">حذف</string>
     <string name="photos">الصور</string>
+    <string name="images">الصور</string>
     <string name="videos">أشرطة فيديو</string>
+    <string name="downloads">التحميلات</string>
     <string name="share">شارك</string>
     <string name="repost">إعادة نشر</string>
     <string name="exit_alert">اضغط مرة أخرى للخروج</string>
@@ -35,10 +38,10 @@
     <string name="step_2">الخطوة 2</string>
     <string name="step_3">الخطوة 3</string>
     <string name="step_4">الخطوة 4</string>
-    <string name="first_step">اضغط على أيقونة WhatsApp.</string>
-    <string name="second_step">انقر لفتح Whatsapp أو WA Business.</string>
-    <string name="step_three">أولاً ، يجب أن ترى الحالة من Whatsapp أو WA Business.</string>
-    <string name="step_four">بمجرد أن ترى الحالة في Whatsapp أو WA Business ، ثم افتح هذا التطبيق واسحب لأسفل لتحديث الحالة ، ستكون حالتك المرئية هنا في هذا التطبيق ومن هنا يمكنك التنزيل والمشاركة.</string>
+    <string name="first_step">افتح التطبيق وامنح إذن الوصول إلى التخزين.</string>
+    <string name="second_step">ستظهر جميع الحالات المتاحة من WhatsApp و WA Business تلقائيًا.</string>
+    <string name="step_three">اضغط على أي حالة لمعاينتها، أو استخدم التحديد المتعدد.</string>
+    <string name="step_four">اضغط على زر الحفظ للتنزيل. اسحب لأسفل لتحديث وتحميل أحدث الحالات. الحالات المحفوظة موجودة في علامة التبويب المحفوظة.</string>
     <string name="status_not_available">الحالة غير متوفرة.</string>
     <string name="wapp_permission">انقر فوق هذا الزر واسمح للإذن بالوصول إلى حالتك</string>
     <string name="allow_storage_access">السماح بالوصول التخزين</string>
@@ -50,12 +53,4 @@
     <string name="select_country">حدد الدولة وأدخل رقم الهاتف المحمول.</string>
     <string name="f_font">خط فاخر</string>
     <string name="edit_text_value">أدخل النص هنا</string>
-    <string name="deleted_record_not_available">السجل المحذوف غير متوفر</string>
-    <string name="whatsapp_deleted_msg">رسائل Whatsapp المحذوفة</string>
-    <string name="whatsapp_notification_listener_service">مستمع إشعار WhatsApp</string>
-    <string name="media_observer_service">خدمة المراقب الإعلامي</string>
-    <string name="notification_permission_msg">بحاجة إلى إذن إعلام للرسالة المحذوفة ، بدون إذن لا يمكن قراءة الرسالة.</string>
-    <string name="notification_permission_retry">أعد المحاولة</string>
-    <string name="notification_permission_deny">ينكر</string>
-    <string name="deleted_msg">الرسائل المحذوفة</string>
 </resources>

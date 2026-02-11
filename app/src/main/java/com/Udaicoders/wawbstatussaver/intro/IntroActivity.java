@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +39,7 @@ public class IntroActivity extends AppCompatActivity {
     private int[] layouts;
     private TextView btnNext;//btnSkip
     //    private PrefManager prefManager;
-    TextView storage, noti;
+    TextView storage;
 //    ImageView goIV;
 
     String[] permissionsList = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -49,8 +48,6 @@ public class IntroActivity extends AppCompatActivity {
 
     String[] permissionsList13 = new String[]{Manifest.permission.READ_MEDIA_IMAGES,
              Manifest.permission.READ_MEDIA_VIDEO};
-    private final int REQUEST_CODE_NOTIFICATION_LISTENER = 500;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,16 +100,16 @@ public class IntroActivity extends AppCompatActivity {
                 int current = getItem(+1);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 {
-                    if (current == 4 && !hasPermissions(IntroActivity.this, permissionsList13) && !Utils.isNotificationServiceRunning(IntroActivity.this)) {
-                        Toast.makeText(IntroActivity.this, "Allow both permissions", Toast.LENGTH_SHORT).show();
+                    if (current == 4 && !hasPermissions(IntroActivity.this, permissionsList13)) {
+                        Toast.makeText(IntroActivity.this, "Allow storage permission", Toast.LENGTH_SHORT).show();
                         ActivityCompat.requestPermissions(IntroActivity.this, permissionsList13, 211);
                         return;
                     }
                 }
                 else
                 {
-                    if (current == 4 && !hasPermissions(IntroActivity.this, permissionsList) && !Utils.isNotificationServiceRunning(IntroActivity.this)) {
-                        Toast.makeText(IntroActivity.this, "Allow both permissions", Toast.LENGTH_SHORT).show();
+                    if (current == 4 && !hasPermissions(IntroActivity.this, permissionsList)) {
+                        Toast.makeText(IntroActivity.this, "Allow storage permission", Toast.LENGTH_SHORT).show();
                         ActivityCompat.requestPermissions(IntroActivity.this, permissionsList, 21);
                         return;
                     }
@@ -153,19 +150,6 @@ public class IntroActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_NOTIFICATION_LISTENER) {
-            if (Utils.isNotificationServiceRunning(this)) {
-                noti.setText("Granted");
-                noti.setClickable(false);
-            } else {
-                Toast.makeText(this, "Allow permission to read messages", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private void addBottomDots(int currentPage) {
         dots = new TextView[layouts.length];
 
@@ -197,10 +181,10 @@ public class IntroActivity extends AppCompatActivity {
 //        prefManager.setFirstTimeLaunch(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && hasPermissions(this, permissionsList13)) {
-            Toast.makeText(this, "Allow both permissions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Allow storage permission", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, permissionsList13, 211);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && hasPermissions(this, permissionsList)) {
-            Toast.makeText(this, "Allow both permissions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Allow storage permission", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, permissionsList, 21);
         } else {
             startActivity(new Intent(IntroActivity.this, MainActivity.class));
@@ -297,11 +281,6 @@ public class IntroActivity extends AppCompatActivity {
                             ActivityCompat.requestPermissions(IntroActivity.this, permissionsList, 21);
                         }
 
-                    });
-
-                    noti = view.findViewById(R.id.noti);
-                    noti.setOnClickListener(v -> {
-                        startActivityForResult(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS), REQUEST_CODE_NOTIFICATION_LISTENER);
                     });
 
                     break;

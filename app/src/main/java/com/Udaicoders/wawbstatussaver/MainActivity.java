@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,16 +22,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.Udaicoders.wawbstatussaver.font.FontActivity;
-import com.Udaicoders.wawbstatussaver.fragment.RecentWapp;
-import com.Udaicoders.wawbstatussaver.fragment.RecentWappBus;
+import com.Udaicoders.wawbstatussaver.fragment.DownloadsFragment;
+import com.Udaicoders.wawbstatussaver.fragment.RecentStatusFragment;
 import com.Udaicoders.wawbstatussaver.util.AdController;
 import com.Udaicoders.wawbstatussaver.util.SharedPrefs;
 import com.Udaicoders.wawbstatussaver.util.Utils;
-import com.Udaicoders.wawbstatussaver.warecovermsg.DeletedMsgActivity;
-import com.Udaicoders.wawbstatussaver.waweb.WAWebActivity;
 import com.bumptech.glide.Glide;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ironsource.mediationsdk.IronSource;
 
 import java.util.ArrayList;
@@ -47,18 +42,17 @@ public class MainActivity extends AppCompatActivity {
     private SlidingRootNav slidingRootNav;
     ImageView whatsIV, navIV, nTop;
 
-    LinearLayout nWapp, nWbapp, nSaved, nLang, nShare, nRate, nPrivacy, nMore, nHow, nWeb, nChat, nFont, nWRecover;
+    LinearLayout nWapp, nSaved, nLang, nShare, nRate, nPrivacy, nHow;
     RelativeLayout nDark;
 
-    ImageView niWapp, niWbapp, niSaved, niDark, niLang, niShare, niRate, niPrivacy, niMore, niHow, niWeb, niChat, niFont, niWRecover;
+    ImageView niWapp, niSaved, niDark, niLang, niShare, niRate, niPrivacy, niHow;
 
-    TextView ntWapp, ntWbapp, ntSaved, ntDark, ntLang, ntShare, ntRate, ntPrivacy, ntMore, ntHow, ntWeb, ntChat, ntFont, ntWRecover;
+    TextView ntWapp, ntSaved, ntDark, ntLang, ntShare, ntRate, ntPrivacy, ntHow;
 
     SwitchCompat modeSwitch;
 
-    TabLayout tabLayout;
     ViewPager viewPager;
-    String[] tabs;
+    BottomNavigationView bottomNav;
     Dialog dialog, dialogLang;
     LinearLayout container;
 
@@ -70,60 +64,58 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
+        viewPager.setOffscreenPageLimit(2);
 
-        tabs = new String[2];
-        tabs[0] = getResources().getString(R.string.wapp);
-        tabs[1] = getResources().getString(R.string.wbapp);
-        tabLayout = findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
+        bottomNav = findViewById(R.id.bottom_navigation);
 
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            TabLayout.Tab tab = tabLayout.getTabAt(i);
-            tab.setCustomView(getTabViewUn(i));
-        }
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_images) {
+                viewPager.setCurrentItem(0, true);
+            } else if (id == R.id.nav_videos) {
+                viewPager.setCurrentItem(1, true);
+            } else if (id == R.id.nav_saved) {
+                viewPager.setCurrentItem(2, true);
+            }
+            return true;
+        });
 
-        setupTabIcons();
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
-                TabLayout.Tab tabs = tabLayout.getTabAt(tab.getPosition());
-                tabs.setCustomView(null);
-                tabs.setCustomView(getTabView(tab.getPosition()));
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        bottomNav.setSelectedItemId(R.id.nav_images);
+                        break;
+                    case 1:
+                        bottomNav.setSelectedItemId(R.id.nav_videos);
+                        break;
+                    case 2:
+                        bottomNav.setSelectedItemId(R.id.nav_saved);
+                        break;
+                }
 
-//                navigate(null);
-
-                if (tab.getPosition() == 0) {
-                    if (isOpenWapp) {
-                        isOpenWapp = false;
-                        if (!SharedPrefs.getWATree(MainActivity.this).equals("")) {
-                            ((RecentWapp) MainActivity.this.getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + tab.getPosition())).populateGrid();
-                        }
+                // Refresh RecentStatusFragment only when needed
+                Fragment fragment = getSupportFragmentManager()
+                        .findFragmentByTag("android:switcher:" + viewPager.getId()
+                                + ":" + position);
+                if (fragment instanceof RecentStatusFragment) {
+                    RecentStatusFragment rsf = (RecentStatusFragment) fragment;
+                    String waTree = SharedPrefs.getWATree(MainActivity.this);
+                    String wbTree = SharedPrefs.getWBTree(MainActivity.this);
+                    boolean hasAccess = !waTree.equals("") || !wbTree.equals("");
+                    if (hasAccess && (isReturnedFromWhatsApp || !rsf.isDataLoaded())) {
+                        rsf.populateGrid();
                     }
                 }
-                if (tab.getPosition() == 1) {
-                    if (isOpenWbApp) {
-                        isOpenWbApp = false;
-                        if (!SharedPrefs.getWBTree(MainActivity.this).equals("")) {
-                            ((RecentWappBus) MainActivity.this.getSupportFragmentManager().findFragmentByTag("android:switcher:" + viewPager.getId() + ":" + tab.getPosition())).populateGrid();
-                        }
-                    }
-                }
+                isReturnedFromWhatsApp = false;
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                TabLayout.Tab tabs = tabLayout.getTabAt(tab.getPosition());
-                tabs.setCustomView(null);
-                tabs.setCustomView(getTabViewUn(tab.getPosition()));
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
 
 
@@ -178,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    boolean isOpenWapp = false, isOpenWbApp = false;
+    boolean isReturnedFromWhatsApp = false;
 
     void wAppAlert() {
         dialog = new Dialog(MainActivity.this);
@@ -191,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnWapp.setOnClickListener(arg0 -> {
             try {
-                isOpenWapp = true;
+                isReturnedFromWhatsApp = true;
                 startActivity(getPackageManager().getLaunchIntentForPackage("com.whatsapp"));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -203,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnWappBus.setOnClickListener(arg0 -> {
             try {
-                isOpenWbApp = true;
+                isReturnedFromWhatsApp = true;
                 startActivity(getPackageManager().getLaunchIntentForPackage("com.whatsapp.w4b"));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -261,8 +253,9 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        adapter.addFragment(new RecentWapp(), "Whatsapp");
-        adapter.addFragment(new RecentWappBus(), "WA Business");
+        adapter.addFragment(RecentStatusFragment.newInstance(RecentStatusFragment.FILTER_IMAGES), "Images");
+        adapter.addFragment(RecentStatusFragment.newInstance(RecentStatusFragment.FILTER_VIDEOS), "Videos");
+        adapter.addFragment(new DownloadsFragment(), "Saved");
 
         viewPager.setAdapter(adapter);
     }
@@ -296,102 +289,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupTabIcons() {
-        View v = LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        TextView txt = v.findViewById(R.id.tab);
-        txt.setText(tabs[0]);
-        txt.setTextColor(getResources().getColor(R.color.tab_txt_press));
-        txt.setBackgroundResource(R.drawable.press_tab);
-        FrameLayout.LayoutParams tabp = new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels * 438 / 1080, getResources().getDisplayMetrics().heightPixels * 140 / 1920);
-        txt.setLayoutParams(tabp);
-        TabLayout.Tab tab = tabLayout.getTabAt(0);
-        tab.setCustomView(null);
-        tab.setCustomView(v);
-    }
-
-    public View getTabView(int pos) {
-        View v = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
-        TextView txt = v.findViewById(R.id.tab);
-        txt.setText(tabs[pos]);
-        txt.setTextColor(getResources().getColor(R.color.tab_txt_press));
-        txt.setBackgroundResource(R.drawable.press_tab);
-        FrameLayout.LayoutParams tab = new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels * 438 / 1080, getResources().getDisplayMetrics().heightPixels * 140 / 1920);
-        txt.setLayoutParams(tab);
-        return v;
-    }
-
-    public View getTabViewUn(int pos) {
-        View v = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_tab, null);
-        TextView txt = v.findViewById(R.id.tab);
-        txt.setText(tabs[pos]);
-        txt.setTextColor(getResources().getColor(R.color.tab_txt_unpress));
-        txt.setBackgroundResource(R.drawable.unpress_tab);
-        FrameLayout.LayoutParams tab = new FrameLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels * 438 / 1080, getResources().getDisplayMetrics().heightPixels * 140 / 1920);
-        txt.setLayoutParams(tab);
-        return v;
-    }
-
     public void initDrawer() {
         nWapp = findViewById(R.id.nWapp);
-        nWbapp = findViewById(R.id.nWbapp);
         nSaved = findViewById(R.id.nSaved);
         nDark = findViewById(R.id.nDark);
         nLang = findViewById(R.id.nLang);
         nShare = findViewById(R.id.nShare);
         nRate = findViewById(R.id.nRate);
         nPrivacy = findViewById(R.id.nPrivacy);
-        nMore = findViewById(R.id.nMore);
         nHow = findViewById(R.id.nHow);
-        nWeb = findViewById(R.id.nWeb);
-        nChat = findViewById(R.id.nChat);
-        nFont = findViewById(R.id.nFont);
-        nWRecover = findViewById(R.id.nWRecover);
 
         niWapp = findViewById(R.id.niWapp);
-        niWbapp = findViewById(R.id.niWbapp);
         niSaved = findViewById(R.id.niSaved);
         niDark = findViewById(R.id.niDark);
         niLang = findViewById(R.id.niLang);
         niShare = findViewById(R.id.niShare);
         niRate = findViewById(R.id.niRate);
         niPrivacy = findViewById(R.id.niPrivacy);
-        niMore = findViewById(R.id.niMore);
         niHow = findViewById(R.id.niHow);
-        niWeb = findViewById(R.id.niWeb);
-        niChat = findViewById(R.id.niChat);
-        niFont = findViewById(R.id.niFont);
-        niWRecover = findViewById(R.id.niWRecover);
 
         ntWapp = findViewById(R.id.ntWapp);
-        ntWbapp = findViewById(R.id.ntWbapp);
         ntSaved = findViewById(R.id.ntSaved);
         ntDark = findViewById(R.id.ntDark);
         ntLang = findViewById(R.id.ntLang);
         ntShare = findViewById(R.id.ntShare);
         ntRate = findViewById(R.id.ntRate);
         ntPrivacy = findViewById(R.id.ntPrivacy);
-        ntMore = findViewById(R.id.ntMore);
         ntHow = findViewById(R.id.ntHow);
-        ntWeb = findViewById(R.id.ntWeb);
-        ntChat = findViewById(R.id.ntChat);
-        ntFont = findViewById(R.id.ntFont);
-        ntWRecover = findViewById(R.id.ntWRecover);
 
 
         nWapp.setOnClickListener(new ClickListener());
-        nWbapp.setOnClickListener(new ClickListener());
         nSaved.setOnClickListener(new ClickListener());
         nDark.setOnClickListener(new ClickListener());
         nLang.setOnClickListener(new ClickListener());
         nShare.setOnClickListener(new ClickListener());
         nRate.setOnClickListener(new ClickListener());
         nPrivacy.setOnClickListener(new ClickListener());
-        nMore.setOnClickListener(new ClickListener());
         nHow.setOnClickListener(new ClickListener());
-        nWeb.setOnClickListener(new ClickListener());
-        nChat.setOnClickListener(new ClickListener());
-        nFont.setOnClickListener(new ClickListener());
-        nWRecover.setOnClickListener(new ClickListener());
 
         modeSwitch = findViewById(R.id.modeSwitch);
         int mode = SharedPrefs.getAppNightDayMode(this);
@@ -413,19 +347,12 @@ public class MainActivity extends AppCompatActivity {
 
     void setUnpress() {
         setPress(niWapp, ntWapp, R.color.drawer_unpress);
-        setPress(niWbapp, ntWbapp, R.color.drawer_unpress);
-        setPress(niSaved, ntSaved, R.color.drawer_unpress);
         setPress(niSaved, ntSaved, R.color.drawer_unpress);
         setPress(niLang, ntLang, R.color.drawer_unpress);
         setPress(niHow, ntHow, R.color.drawer_unpress);
         setPress(niShare, ntShare, R.color.drawer_unpress);
         setPress(niRate, ntRate, R.color.drawer_unpress);
         setPress(niPrivacy, ntPrivacy, R.color.drawer_unpress);
-        setPress(niMore, ntMore, R.color.drawer_unpress);
-        setPress(niWeb, ntWeb, R.color.drawer_unpress);
-        setPress(niChat, ntChat, R.color.drawer_unpress);
-        setPress(niFont, ntFont, R.color.drawer_unpress);
-        setPress(niWRecover, ntWRecover, R.color.drawer_unpress);
     }
 
     void setPress(ImageView imageView, TextView textView, int color) {
@@ -445,61 +372,10 @@ public class MainActivity extends AppCompatActivity {
                     slidingRootNav.closeMenu();
                     break;
 
-                case R.id.nWbapp:
-                    setUnpress();
-                    setPress(niWbapp, ntWbapp, R.color.drawer_press);
-                    viewPager.setCurrentItem(1);
-                    slidingRootNav.closeMenu();
-                    break;
-
                 case R.id.nSaved:
                     setUnpress();
                     setPress(niSaved, ntSaved, R.color.drawer_press);
-
-                    navigate(new Intent(MainActivity.this, MyStatusActivity.class));
-
-
-                    slidingRootNav.closeMenu();
-                    break;
-
-                case R.id.nWeb:
-                    setUnpress();
-                    setPress(niWeb, ntWeb, R.color.drawer_press);
-
-                    navigate(new Intent(MainActivity.this, WAWebActivity.class));
-
-
-                    slidingRootNav.closeMenu();
-                    break;
-
-                case R.id.nChat:
-                    setUnpress();
-                    setPress(niChat, ntChat, R.color.drawer_press);
-
-                    navigate(new Intent(MainActivity.this, DChatActivity.class));
-
-
-                    slidingRootNav.closeMenu();
-                    break;
-
-                case R.id.nFont:
-                    setUnpress();
-                    setPress(niFont, ntFont, R.color.drawer_press);
-
-                    navigate(new Intent(MainActivity.this, FontActivity.class));
-
-
-                    slidingRootNav.closeMenu();
-                    break;
-
-                case R.id.nWRecover:
-                    setUnpress();
-                    setPress(niWRecover, ntWRecover, R.color.drawer_press);
-
-
-                    navigate(new Intent(MainActivity.this, DeletedMsgActivity.class));
-
-
+                    viewPager.setCurrentItem(2);
                     slidingRootNav.closeMenu();
                     break;
 
@@ -535,13 +411,6 @@ public class MainActivity extends AppCompatActivity {
                     rateUs();
                     break;
 
-                case R.id.nMore:
-                    setUnpress();
-                    setPress(niMore, ntMore, R.color.drawer_press);
-                    slidingRootNav.closeMenu();
-                    moreApp();
-                    break;
-
                 case R.id.nPrivacy:
                     setUnpress();
                     setPress(niPrivacy, ntPrivacy, R.color.drawer_press);
@@ -574,10 +443,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (ActivityNotFoundException e) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
         }
-    }
-
-    public void moreApp() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/dev?id=7081479513420377164&hl=en")));
     }
 
     private long mLastBackClick = 0;
