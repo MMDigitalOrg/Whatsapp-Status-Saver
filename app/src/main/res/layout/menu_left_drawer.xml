@@ -75,31 +75,10 @@
                     android:id="@+id/ntWapp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/wapp"
+                    android:text="@string/recent_status"
                     android:textSize="@dimen/_14sdp"
                     android:textStyle="bold"
                     android:textColor="@color/drawer_press"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/nWbapp"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niWbapp"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/ic_wa_business" />
-                <TextView
-                    android:id="@+id/ntWbapp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/wbapp"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
                     android:layout_marginLeft="@dimen/_6sdp"/>
             </LinearLayout>
 
@@ -118,90 +97,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/saved_status"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/nWeb"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niWeb"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/wa_web" />
-                <TextView
-                    android:id="@+id/ntWeb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/wa_web"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/nChat"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niChat"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/direct_chat" />
-                <TextView
-                    android:id="@+id/ntChat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/d_chat"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/nFont"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niFont"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/fancy" />
-                <TextView
-                    android:id="@+id/ntFont"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/f_font"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/nWRecover"
-                android:layout_width="@dimen/_145sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niWRecover"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/ic_recover_msg" />
-                <TextView
-                    android:id="@+id/ntWRecover"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/deleted_msg"
                     android:textSize="@dimen/_14sdp"
                     android:textStyle="bold"
                     android:textColor="@color/drawer_unpress"
@@ -347,26 +242,6 @@
                     android:layout_marginLeft="@dimen/_6sdp"/>
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/nMore"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:gravity="center|left">
-                <ImageView
-                    android:id="@+id/niMore"
-                    android:layout_width="@dimen/_22sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/ic_more" />
-                <TextView
-                    android:id="@+id/ntMore"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/more_app"
-                    android:textSize="@dimen/_14sdp"
-                    android:textStyle="bold"
-                    android:textColor="@color/drawer_unpress"
-                    android:layout_marginLeft="@dimen/_6sdp"/>
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

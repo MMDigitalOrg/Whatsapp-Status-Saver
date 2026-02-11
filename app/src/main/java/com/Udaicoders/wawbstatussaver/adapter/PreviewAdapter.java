@@ -46,9 +46,10 @@ public class PreviewAdapter extends PagerAdapter {
         Glide.with(this.activity).load(imageList.get(position).getFilePath()).into(imageView);
 
         imageView.setOnClickListener(view -> {
-            if (!Utils.getBack(imageList.get(position).getFilePath(), "((\\.mp4|\\.webm|\\.ogg|\\.mpK|\\.avi|\\.mkv|\\.flv|\\.mpg|\\.wmv|\\.vob|\\.ogv|\\.mov|\\.qt|\\.rm|\\.rmvb\\.|\\.asf|\\.m4p|\\.m4v|\\.mp2|\\.mpeg|\\.mpe|\\.mpv|\\.m2v|\\.3gp|\\.f4p|\\.f4a|\\.f4b|\\.f4v)$)").isEmpty()) {
-                Utils.mPath = imageList.get(position).getFilePath();
-                activity.startActivity(new Intent(activity, VideoPlayerActivity.class));
+            if (Utils.isVideoFile(activity, imageList.get(position).getFilePath())) {
+                Intent videoIntent = new Intent(activity, VideoPlayerActivity.class);
+                videoIntent.putExtra("videoUri", imageList.get(position).getFilePath());
+                activity.startActivity(videoIntent);
             }
         });
         container.addView(itemView);

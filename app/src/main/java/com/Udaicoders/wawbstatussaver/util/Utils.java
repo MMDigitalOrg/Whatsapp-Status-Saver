@@ -2,7 +2,6 @@ package com.Udaicoders.wawbstatussaver.util;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,7 +13,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -260,11 +258,4 @@ public class Utils {
         return root;
     }
 
-    public static boolean isNotificationServiceRunning(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
-        String enabledNotificationListeners =
-                Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
-        String packageName = context.getPackageName();
-        return enabledNotificationListeners != null && enabledNotificationListeners.contains(packageName);
-    }
 }

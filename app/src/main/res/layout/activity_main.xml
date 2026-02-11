@@ -10,7 +10,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_45sdp"
+        android:layout_height="@dimen/_50sdp"
         android:id="@+id/header">
 
         <ImageView
@@ -22,10 +22,11 @@
             app:tint="@color/header_text_color" />
 
         <TextView
+            android:id="@+id/headerTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/recent_status"
+            android:text="@string/app_name"
             android:textColor="@color/header_text_color"
             android:textStyle="bold"
             android:textSize="@dimen/_16sdp"/>
@@ -40,25 +41,23 @@
             app:tint="@color/header_text_color" />
     </RelativeLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tablayout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_60sdp"
-        android:layout_below="@+id/header"
-        app:tabIndicatorHeight="0dp"
-        app:tabMode="scrollable"
-        app:tabPaddingStart="0dp"
-        app:tabPaddingEnd="0dp"
-        app:tabGravity="center"
-        app:tabRippleColor="@color/transparent"
-        app:tabIndicatorColor="@color/transparent" />
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_above="@+id/bottom_navigation" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/banner_container"
-        android:layout_below="@id/tablayout" />
+        android:background="@color/main_bg_color"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
 
     <include layout="@layout/banner_ad_lay"/>
 </RelativeLayout>

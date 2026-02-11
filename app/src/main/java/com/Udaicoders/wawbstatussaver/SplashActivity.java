@@ -27,13 +27,13 @@ public class SplashActivity extends AppCompatActivity {
         Utils.setLanguage(SplashActivity.this, SharedPrefs.getLang(SplashActivity.this));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (!Utils.hasPermissions(this, permissions13) && Utils.isNotificationServiceRunning(this)) {
+            if (!Utils.hasPermissions(this, permissions13)) {
                 gotoNext();
             } else {
                 gotoIntro();
             }
         } else {
-            if (!Utils.hasPermissions(this, permissions) && Utils.isNotificationServiceRunning(this)) {
+            if (!Utils.hasPermissions(this, permissions)) {
                 gotoNext();
             } else {
                 gotoIntro();
