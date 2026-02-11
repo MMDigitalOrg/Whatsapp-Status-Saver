@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+    id 'com.github.triplet.play'
 }
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -53,6 +54,12 @@ android {
             enableSplit = false
         }
     }
+}
+
+play {
+    serviceAccountCredentials = rootProject.file("play-service-account.json")
+    track = "alpha"  // uploads to closed testing track
+    defaultToAppBundles = true
 }
 
 repositories {
