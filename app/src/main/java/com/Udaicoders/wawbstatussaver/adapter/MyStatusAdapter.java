@@ -119,7 +119,7 @@ public class MyStatusAdapter extends BaseAdapter {
                 Intent videoIntent = new Intent(context.getActivity(), VideoPlayerActivity.class);
                 videoIntent.putExtra("videoUri", item.getFilePath());
                 videoIntent.putExtra("isDownloaded", true);
-                context.startActivity(videoIntent);
+                context.startActivityForResult(videoIntent, 10);
             } else {
                 Intent intent = new Intent(context.getActivity(), PreviewActivity.class);
                 intent.putParcelableArrayListExtra("images", (ArrayList<? extends Parcelable>) arrayList);

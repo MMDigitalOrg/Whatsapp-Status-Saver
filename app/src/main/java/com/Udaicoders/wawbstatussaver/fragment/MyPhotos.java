@@ -136,7 +136,7 @@ public class MyPhotos extends Fragment implements MyStatusAdapter.OnCheckboxList
             for (int i = 0; i < filesToDelete.size(); i++) {
                 StatusModel details = filesToDelete.get(i);
                 File file = new File(details.getFilePath());
-                Log.e( "doInBackground: ", file.getAbsolutePath());
+                // path logging removed for security
                 if (file.exists()) {
                     if (file.delete()) {
                         deletedFiles.add(details);

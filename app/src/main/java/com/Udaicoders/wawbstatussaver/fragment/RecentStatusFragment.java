@@ -480,7 +480,7 @@ public class RecentStatusFragment extends Fragment implements RecentAdapter.OnCh
         // Handle SAF permission grants
         if (resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
-            Log.e("onActivityResult: ", "" + data.getData());
+            // URI logging removed for security
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     requireContext().getContentResolver()

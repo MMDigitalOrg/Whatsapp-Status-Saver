@@ -96,7 +96,7 @@ public class DChatActivity extends AppCompatActivity {
         }else {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+ccp.getSelectedCountryCode()+edtPhoneNumber.getText().toString() +"&text="+msg_edt.getText().toString()));
+                intent.setData(Uri.parse("https://api.whatsapp.com/send?phone="+ccp.getSelectedCountryCode()+edtPhoneNumber.getText().toString() +"&text="+msg_edt.getText().toString()));
                 startActivity(intent);
             }catch (Exception e){
                 Toast.makeText(DChatActivity.this, "Install WhatsApp First...", Toast.LENGTH_SHORT).show();

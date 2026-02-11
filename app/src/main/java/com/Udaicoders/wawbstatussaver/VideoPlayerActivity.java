@@ -1,7 +1,10 @@
 package com.Udaicoders.wawbstatussaver;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -11,16 +14,19 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.Udaicoders.wawbstatussaver.util.Utils;
+
+import java.io.File;
 
 
 public class VideoPlayerActivity extends AppCompatActivity {
 
     VideoView displayVV;
     ImageView backIV;
-    LinearLayout downloadIV, shareIV;
+    LinearLayout downloadIV, shareIV, deleteIV;
     ProgressBar videoLoader;
     Uri videoUri;
     String videoUriString;
@@ -81,10 +87,12 @@ public class VideoPlayerActivity extends AppCompatActivity {
         // Action buttons
         downloadIV = findViewById(R.id.downloadIV);
         shareIV = findViewById(R.id.shareIV);
+        deleteIV = findViewById(R.id.deleteIV);
 
-        // Hide save button if this is already a downloaded file
+        // Hide save button if this is already a downloaded file; show delete instead
         if (isDownloaded) {
             downloadIV.setVisibility(View.GONE);
+            deleteIV.setVisibility(View.VISIBLE);
         }
 
         downloadIV.setOnClickListener(v -> {
@@ -101,6 +109,41 @@ public class VideoPlayerActivity extends AppCompatActivity {
         shareIV.setOnClickListener(v -> {
             if (videoUriString != null) {
                 Utils.shareFile(VideoPlayerActivity.this, true, videoUriString);
+            }
+        });
+
+        deleteIV.setOnClickListener(v -> {
+            if (videoUriString != null) {
+                new AlertDialog.Builder(VideoPlayerActivity.this)
+                        .setTitle(R.string.confirm)
+                        .setMessage(R.string.del_status)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
+                            dialog.dismiss();
+                            try {
+                                File file = new File(videoUriString);
+                                // Validate path is within app's download directory
+                                String canonicalPath = file.getCanonicalPath();
+                                File downloadDir = new File(Environment.getExternalStorageDirectory(),
+                                        "Download" + File.separator + getResources().getString(R.string.app_name));
+                                String allowedPath = downloadDir.getCanonicalPath();
+                                if (!canonicalPath.startsWith(allowedPath)) {
+                                    Toast.makeText(VideoPlayerActivity.this, getResources().getString(R.string.delete_error), Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                if (file.exists() && file.delete()) {
+                                    Toast.makeText(VideoPlayerActivity.this, getResources().getString(R.string.delete_success), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent();
+                                    setResult(10, intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(VideoPlayerActivity.this, getResources().getString(R.string.delete_error), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                Toast.makeText(VideoPlayerActivity.this, getResources().getString(R.string.delete_error), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+                        .show();
             }
         });
     }

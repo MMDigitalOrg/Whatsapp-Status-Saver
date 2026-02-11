@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Base64;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -26,9 +25,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BlobDownloader {
+
+    private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<>(Arrays.asList(
+            ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp",
+            ".mp4", ".3gp", ".mkv", ".avi", ".webm",
+            ".mp3", ".aac", ".ogg", ".opus", ".m4a", ".wav",
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+            ".apk", ".zip", ".txt", ".vcf"
+    ));
     private Context context;
 
     public final static String JsInstance = "Downloader";
@@ -43,20 +53,14 @@ public class BlobDownloader {
 
     @JavascriptInterface
     public void getBase64FromBlobData(String base64Data) throws IOException {
-        Log.d(WAWebActivity.DEBUG_TAG,"Download triggered "+ System.currentTimeMillis());
-        lastDownloadTime = System.currentTimeMillis();
-
-        if(System.currentTimeMillis() - lastDownloadTime < sameFileDownloadTimeout){
-            Log.d(WAWebActivity.DEBUG_TAG,"Download within sameFileDownloadTimeout");
-
+        if (System.currentTimeMillis() - lastDownloadTime < sameFileDownloadTimeout) {
             if (lastDownloadBlob.equals(base64Data)) {
-                Log.d(WAWebActivity.DEBUG_TAG,"Blobs match, ignoring download");
-            } else {
-                Log.d(WAWebActivity.DEBUG_TAG,"Blobs do not match, downloading");
-                lastDownloadBlob = base64Data;
-                convertBase64StringToFileAndStoreIt(base64Data);
+                return;
             }
         }
+        lastDownloadTime = System.currentTimeMillis();
+        lastDownloadBlob = base64Data;
+        convertBase64StringToFileAndStoreIt(base64Data);
     }
 
     public static String getBase64StringFromBlobUrl(String blobUrl) {
@@ -90,14 +94,28 @@ public class BlobDownloader {
             extension = "." + extension.substring(extension.indexOf('/') + 1, extension.indexOf(';'));
         }
 
+        // Validate extension against whitelist
+        if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
+            Toast.makeText(context, "Unsupported file type", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final byte[] fileAsBytes;
+        try {
+            fileAsBytes = Base64.decode(base64File.replaceFirst(strings[0], ""), 0);
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(context, "Download failed: invalid data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         @SuppressLint("SimpleDateFormat") //SDF is just fine for filename
         final String currentDateTime = new SimpleDateFormat("yyyyMMdd-hhmmss").format(new Date());
         final String dlFileName = "WAWTG_" + currentDateTime + extension;
         final File dlFilePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dlFileName);
-        final byte[] fileAsBytes = Base64.decode(base64File.replaceFirst(strings[0], ""), 0);
-        final FileOutputStream os = new FileOutputStream(dlFilePath, false);
-        os.write(fileAsBytes);
-        os.flush();
+        try (FileOutputStream os = new FileOutputStream(dlFilePath, false)) {
+            os.write(fileAsBytes);
+            os.flush();
+        }
 
         if (dlFilePath.exists()) {
             final Intent intent = new Intent();
@@ -106,7 +124,8 @@ public class BlobDownloader {
             intent.setDataAndType(apkURI, MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-            final PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            final PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationId, intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             final String notificationChannelId = "Downloads";
 
             final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
